@@ -1,8 +1,7 @@
-import './App.css'
 import "@blocknote/core/style.css"
 import { BlockNoteView, useBlockNote } from "@blocknote/react"
 
-function App() {
+export const App = () => {
   const editor = useBlockNote({
     onEditorContentChange: (editor) => {
       console.log(editor)
@@ -12,5 +11,3 @@ function App() {
     <BlockNoteView editor={editor} />
   )
 }
-
-export default App
