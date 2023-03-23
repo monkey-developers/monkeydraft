@@ -1,12 +1,16 @@
 import express from "express"
 import cors from "cors"
 import { controller } from "./controller"
+import { createMarkdownTable, createUserTable } from "./helpers"
 
 const PORT = process.env.PORT || 3000
 const app = express()
+
 app.use(cors())
 app.use(express.json())
 app.use(controller)
+createUserTable()
+createMarkdownTable()
 
 app.listen(PORT, () => (
     console.log(

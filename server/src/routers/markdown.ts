@@ -1,6 +1,18 @@
 import { controller } from "../controller"
 import { db } from "../database"
 
+controller.post("/createMarkdown", async (req, res) => {
+    db.serialize(() => {
+        db.run(
+            "INSERT INTO Markdown (author, content) VALUES (?,?)",
+            [
+                req.body.author,
+                req.body.content
+            ]
+        )
+    })
+})
+
 controller.get("/getMarkdown", async (req, res) => {
     db.serialize(() => {
         db.all(
@@ -13,7 +25,7 @@ controller.get("/getMarkdown", async (req, res) => {
     })
 })
 
-controller.post("/send-markdown", async (req, res) => {
+controller.patch("/sendMarkdown", async (req, res) => {
     db.serialize(() => {
         db.run(
             "INSERT INTO Markdown (content, author) VALUES (?,?)",
