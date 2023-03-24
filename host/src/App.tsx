@@ -1,40 +1,42 @@
 import "@blocknote/core/style.css"
-import axios from "axios"
 import { BlockNoteView, useBlockNote } from "@blocknote/react"
-import { useMutation } from "react-query"
-import { wait } from "./helpers/wait"
-import { useEffect } from "react"
+import { useState } from "react"
+import { useMutation, useQuery } from "react-query"
+import { PostMarkdown, GetMarkdown, PatchMarkdownContent } from "./fetchers/markdown"
 
 export const App = () => {
+  const [content, setContent] = useState('')
 
-  useEffect(() => {
-    axios.post("http://localhost:3000/createMarkdown", {
-      author: 'igor',
-      content: ""
-    })
-      .then(function (res) {
-        console.log(res)
-      })
-      .then(function (err) {
-        console.log(err)
-      })
-  }, [])
-
-  const sendMarkdownData = async () => {
-    return await axios.patch("http://localhost:3000/sendMarkdown")
-  }
-  const saveMarkdown = useMutation(['sendMarkdown'], sendMarkdownData, {
+  const getMarkdown = useQuery(['getMarkdown'], GetMarkdown)
+  const createMarkdown = useMutation(['createMarkdown'], PostMarkdown, {
     onSuccess: () => {
-      console.log("good")
+      console.log('created')
+    },
+    onError: () => {
+      console.log('not created')
     }
   })
+  const patchMarkdown = useMutation(['patchMarkdown'], PatchMarkdownContent, {
+    onSuccess: () => {
+      console.log('patched')
+    },
+    onError: () => {
+      console.log('not patched')
+    }
+  })
+
   const editor = useBlockNote({
     onEditorContentChange: (editor) => {
       let data = JSON.stringify(editor.topLevelBlocks)
-      saveMarkdown.mutate({ author: 'sim', content: data })
+      setContent(data)
     }
   })
+
   return (
-    <BlockNoteView editor={editor} />
+    <div>
+      <BlockNoteView editor={editor} />
+      <button onClick={() => createMarkdown.mutate({ author: 'igor', content: "simsim" })}>clica</button>
+      <button onClick={() => patchMarkdown.mutate({ author: 'igor', content: content })}>Salvar</button>
+    </div>
   )
 }
