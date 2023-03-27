@@ -1,3 +1,4 @@
+import { Block } from "@blocknote/core"
 import "@blocknote/core/style.css"
 import { BlockNoteView, useBlockNote } from "@blocknote/react"
 import { useState } from "react"
@@ -6,6 +7,7 @@ import { PostMarkdown, GetMarkdown, PatchMarkdownContent } from "./fetchers/mark
 
 export const App = () => {
   const [content, setContent] = useState('')
+  const [blocks, setBlocks] = useState<Block[]>([])
 
   const getMarkdown = useQuery(['getMarkdown'], GetMarkdown)
   const createMarkdown = useMutation(['createMarkdown'], PostMarkdown, {
@@ -25,18 +27,25 @@ export const App = () => {
     }
   })
 
+  function handleMarkdownPatch() {
+    blocks.map((item, index) => {
+      console.log(item)
+      patchMarkdown.mutate({ author: '311232', content: JSON.stringify(item) })
+    })
+  }
+
   const editor = useBlockNote({
     onEditorContentChange: (editor) => {
       let data = JSON.stringify(editor.topLevelBlocks)
       setContent(data)
+      setBlocks(editor.topLevelBlocks)
     }
   })
 
   return (
     <div>
       <BlockNoteView editor={editor} />
-      <button onClick={() => createMarkdown.mutate({ author: 'igor', content: "simsim" })}>clica</button>
-      <button onClick={() => patchMarkdown.mutate({ author: 'igor', content: content })}>Salvar</button>
+      <button onClick={() => handleMarkdownPatch()}>Salvar</button>
     </div>
   )
 }
